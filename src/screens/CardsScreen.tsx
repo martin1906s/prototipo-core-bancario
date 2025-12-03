@@ -1,11 +1,19 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { CreditCardView } from '../components/CreditCardView';
 import { formatCurrency } from '../utils/format';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../types';
 
-export const CardsScreen: React.FC = () => {
+type CardsScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
+interface Props {
+  navigation: CardsScreenNavigationProp;
+}
+
+export const CardsScreen: React.FC<Props> = ({ navigation }) => {
   const { cards } = useAuth();
 
   const totalAvailable = cards.reduce((sum, card) => sum + card.availableCredit, 0);
@@ -16,7 +24,10 @@ export const CardsScreen: React.FC = () => {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Mis Tarjetas</Text>
-        <TouchableOpacity style={styles.addButton}>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => navigation.navigate('RequestCard')}
+        >
           <Ionicons name="add-circle-outline" size={28} color="#667eea" />
         </TouchableOpacity>
       </View>
@@ -40,56 +51,76 @@ export const CardsScreen: React.FC = () => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Tus Tarjetas de Crédito</Text>
           {cards.map((card) => (
-            <CreditCardView key={card.id} card={card} />
+            <CreditCardView
+              key={card.id}
+              card={card}
+              onPress={() => navigation.navigate('CardDetails', { cardId: card.id })}
+            />
           ))}
         </View>
 
         {/* Opciones Rápidas */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Opciones</Text>
-          <TouchableOpacity style={styles.optionButton}>
-            <View style={styles.optionIconContainer}>
-              <Ionicons name="lock-closed" size={24} color="#667eea" />
-            </View>
-            <View style={styles.optionContent}>
-              <Text style={styles.optionTitle}>Bloquear Tarjeta</Text>
-              <Text style={styles.optionSubtitle}>Bloquea temporalmente tu tarjeta</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#999" />
-          </TouchableOpacity>
+          {cards.length > 0 && (
+            <>
+              <TouchableOpacity
+                style={styles.optionButton}
+                onPress={() => navigation.navigate('BlockCard', { cardId: cards[0].id })}
+              >
+                <View style={styles.optionIconContainer}>
+                  <Ionicons name="lock-closed" size={24} color="#667eea" />
+                </View>
+                <View style={styles.optionContent}>
+                  <Text style={styles.optionTitle}>Bloquear Tarjeta</Text>
+                  <Text style={styles.optionSubtitle}>Bloquea temporalmente tu tarjeta</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color="#999" />
+              </TouchableOpacity>
 
-          <TouchableOpacity style={styles.optionButton}>
-            <View style={styles.optionIconContainer}>
-              <Ionicons name="document-text" size={24} color="#667eea" />
-            </View>
-            <View style={styles.optionContent}>
-              <Text style={styles.optionTitle}>Estado de Cuenta</Text>
-              <Text style={styles.optionSubtitle}>Ver movimientos de tu tarjeta</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#999" />
-          </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.optionButton}
+                onPress={() => navigation.navigate('CardStatement', { cardId: cards[0].id })}
+              >
+                <View style={styles.optionIconContainer}>
+                  <Ionicons name="document-text" size={24} color="#667eea" />
+                </View>
+                <View style={styles.optionContent}>
+                  <Text style={styles.optionTitle}>Estado de Cuenta</Text>
+                  <Text style={styles.optionSubtitle}>Ver movimientos de tu tarjeta</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color="#999" />
+              </TouchableOpacity>
 
-          <TouchableOpacity style={styles.optionButton}>
-            <View style={styles.optionIconContainer}>
-              <Ionicons name="cash" size={24} color="#667eea" />
-            </View>
-            <View style={styles.optionContent}>
-              <Text style={styles.optionTitle}>Aumentar Límite</Text>
-              <Text style={styles.optionSubtitle}>Solicita un aumento de cupo</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#999" />
-          </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.optionButton}
+                onPress={() => navigation.navigate('IncreaseLimit', { cardId: cards[0].id })}
+              >
+                <View style={styles.optionIconContainer}>
+                  <Ionicons name="cash" size={24} color="#667eea" />
+                </View>
+                <View style={styles.optionContent}>
+                  <Text style={styles.optionTitle}>Aumentar Límite</Text>
+                  <Text style={styles.optionSubtitle}>Solicita un aumento de cupo</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color="#999" />
+              </TouchableOpacity>
 
-          <TouchableOpacity style={styles.optionButton}>
-            <View style={styles.optionIconContainer}>
-              <Ionicons name="calendar" size={24} color="#667eea" />
-            </View>
-            <View style={styles.optionContent}>
-              <Text style={styles.optionTitle}>Diferir Compras</Text>
-              <Text style={styles.optionSubtitle}>Convierte tus compras a cuotas</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#999" />
-          </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.optionButton}
+                onPress={() => navigation.navigate('DeferPurchases', { cardId: cards[0].id })}
+              >
+                <View style={styles.optionIconContainer}>
+                  <Ionicons name="calendar" size={24} color="#667eea" />
+                </View>
+                <View style={styles.optionContent}>
+                  <Text style={styles.optionTitle}>Diferir Compras</Text>
+                  <Text style={styles.optionSubtitle}>Convierte tus compras a cuotas</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color="#999" />
+              </TouchableOpacity>
+            </>
+          )}
         </View>
       </ScrollView>
     </View>

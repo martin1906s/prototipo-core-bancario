@@ -38,13 +38,12 @@ Aplicación móvil de core bancario desarrollada con React Native y Expo Go. Una
 ### 💡 Pagos de Servicios
 - Pago de servicios básicos (Luz, Agua, Teléfono, Internet, TV)
 - Integración con principales proveedores ecuatorianos:
-  - CNT
-  - Empresa Eléctrica
-  - EMAPA
-  - Netlife
-  - DirecTV
-  - Claro
-  - Movistar
+  - **Luz**: CNEL, EEQ, EMELEC, EMCALI
+  - **Agua**: ETAPA, EMAPA, EPMAPS, EMAPAG
+  - **Teléfono**: CNT, Claro, Movistar, Tuenti
+  - **Internet**: Netlife, CNT
+  - **TV**: TV Cable, DirecTV, Claro TV
+  - **Otros**: Predial, Impuestos, Multas
 
 ### 📊 Historial de Transacciones
 - Registro completo de movimientos
@@ -105,10 +104,10 @@ La aplicación cuenta con 4 tabs principales:
 ### Funcionalidades Demo
 
 #### Datos Precargados:
-- **2 Cuentas Bancarias** (Ahorros y Corriente)
+- **3 Cuentas Bancarias** (2 Ahorros y 1 Corriente)
 - **2 Tarjetas de Crédito** (Visa y Mastercard)
 - **2 Préstamos Activos** (Vehicular y Personal)
-- **Historial de transacciones** recientes
+- **10+ Transacciones** en el historial
 
 #### Acciones Disponibles:
 - ✅ Realizar transferencias

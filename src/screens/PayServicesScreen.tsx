@@ -22,18 +22,34 @@ interface Props {
 }
 
 const services: Service[] = [
-  { id: '1', name: 'CNT', category: 'Teléfono', icon: 'call' },
-  { id: '2', name: 'Empresa Eléctrica', category: 'Luz', icon: 'flash' },
-  { id: '3', name: 'EMAPA', category: 'Agua', icon: 'water' },
-  { id: '4', name: 'Netlife', category: 'Internet', icon: 'wifi' },
-  { id: '5', name: 'DirecTV', category: 'TV', icon: 'tv' },
-  { id: '6', name: 'Claro', category: 'Teléfono', icon: 'phone-portrait' },
-  { id: '7', name: 'Movistar', category: 'Teléfono', icon: 'phone-portrait' },
-  { id: '8', name: 'Otros Servicios', category: 'Otros', icon: 'grid' },
+  // Servicios de Luz
+  { id: '1', name: 'CNEL', category: 'Luz', icon: 'flash' },
+  { id: '2', name: 'EEQ', category: 'Luz', icon: 'flash' },
+  { id: '3', name: 'EMELEC', category: 'Luz', icon: 'flash' },
+  { id: '4', name: 'EMCALI', category: 'Luz', icon: 'flash' },
+  // Servicios de Agua
+  { id: '5', name: 'ETAPA', category: 'Agua', icon: 'water' },
+  { id: '6', name: 'EMAPA', category: 'Agua', icon: 'water' },
+  { id: '7', name: 'EPMAPS', category: 'Agua', icon: 'water' },
+  { id: '8', name: 'EMAPAG', category: 'Agua', icon: 'water' },
+  // Servicios de Teléfono e Internet
+  { id: '9', name: 'CNT', category: 'Teléfono', icon: 'call' },
+  { id: '10', name: 'Claro', category: 'Teléfono', icon: 'phone-portrait' },
+  { id: '11', name: 'Movistar', category: 'Teléfono', icon: 'phone-portrait' },
+  { id: '12', name: 'Tuenti', category: 'Teléfono', icon: 'phone-portrait' },
+  { id: '13', name: 'Netlife', category: 'Internet', icon: 'wifi' },
+  { id: '14', name: 'TV Cable', category: 'TV', icon: 'tv' },
+  { id: '15', name: 'DirecTV', category: 'TV', icon: 'tv' },
+  { id: '16', name: 'Claro TV', category: 'TV', icon: 'tv' },
+  // Otros servicios
+  { id: '17', name: 'Predial', category: 'Otros', icon: 'business' },
+  { id: '18', name: 'Impuestos', category: 'Otros', icon: 'document-text' },
+  { id: '19', name: 'Multas', category: 'Otros', icon: 'warning' },
+  { id: '20', name: 'Otros Servicios', category: 'Otros', icon: 'grid' },
 ];
 
 export const PayServicesScreen: React.FC<Props> = ({ navigation }) => {
-  const { accounts, addTransaction } = useAuth();
+  const { accounts, addTransaction, updateAccountBalance } = useAuth();
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [referenceNumber, setReferenceNumber] = useState('');
   const [amount, setAmount] = useState('');
@@ -52,17 +68,25 @@ export const PayServicesScreen: React.FC<Props> = ({ navigation }) => {
     }
 
     const selectedAccount = accounts.find((acc) => acc.id === selectedAccountId);
-    if (selectedAccount && paymentAmount > selectedAccount.balance) {
+    if (!selectedAccount) {
+      Alert.alert('Error', 'Por favor selecciona una cuenta');
+      return;
+    }
+
+    if (paymentAmount > selectedAccount.balance) {
       Alert.alert('Error', 'Saldo insuficiente');
       return;
     }
+
+    // Actualizar balance de la cuenta
+    updateAccountBalance(selectedAccountId, -paymentAmount);
 
     const newTransaction: Transaction = {
       id: Date.now().toString(),
       type: 'Pago',
       amount: -paymentAmount,
       date: new Date(),
-      description: `Pago ${selectedService.name}`,
+      description: `Pago ${selectedService.name} - Ref: ${referenceNumber}`,
       status: 'Completada',
     };
 
@@ -118,7 +142,7 @@ export const PayServicesScreen: React.FC<Props> = ({ navigation }) => {
           {/* Seleccionar cuenta */}
           <View style={styles.section}>
             <Text style={styles.label}>Pagar desde</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
               {accounts.map((account) => (
                 <TouchableOpacity
                   key={account.id}
@@ -200,7 +224,11 @@ export const PayServicesScreen: React.FC<Props> = ({ navigation }) => {
           )}
 
           {/* Botón Pagar */}
-          <TouchableOpacity style={styles.payButton} onPress={handlePayment}>
+          <TouchableOpacity 
+            style={styles.payButton} 
+            onPress={handlePayment}
+            activeOpacity={0.8}
+          >
             <LinearGradient
               colors={['#667eea', '#764ba2']}
               style={styles.payButtonGradient}

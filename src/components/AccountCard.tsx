@@ -18,7 +18,12 @@ export const AccountCard: React.FC<AccountCardProps> = ({ account, onPress }) =>
 
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.8}>
-      <LinearGradient colors={gradientColors} style={styles.card} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+      <LinearGradient
+        colors={gradientColors as [string, string]}
+        style={styles.card}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
         <View style={styles.header}>
           <Text style={styles.accountType}>{account.accountType}</Text>
           <Ionicons name="card-outline" size={24} color="#fff" />

@@ -64,6 +64,38 @@ export type RootStackParamList = {
   Profile: undefined;
   CardDetails: { cardId: string };
   LoanDetails: { loanId: string };
+  QRCode: undefined;
+  Withdraw: undefined;
+  Deposit: undefined;
+  Notifications: undefined;
+  Certificates: undefined;
+  Investments: undefined;
+  Insurance: undefined;
+  Locations: undefined;
+  Settings: undefined;
+  Help: undefined;
+  BlockCard: { cardId: string };
+  CardStatement: { cardId: string };
+  IncreaseLimit: { cardId: string };
+  DeferPurchases: { cardId: string };
+  PayLoan: { loanId: string };
+  RequestLoan: undefined;
+  LoanSimulator: undefined;
+  AmortizationTable: { loanId: string };
+  ForgotPassword: undefined;
+  Register: undefined;
+  ChangePassword: undefined;
+  Security: undefined;
+  Biometry: undefined;
+  ContactSupport: undefined;
+  Terms: undefined;
+  Privacy: undefined;
+  AllAccounts: undefined;
+  RequestCard: undefined;
+  Contacts: { onSelectContact?: (accountNumber: string, name: string) => void } | undefined;
+  Devices: undefined;
+  TransactionDetails: { transaction: Transaction };
+  RequestCertificate: undefined;
 };
 
 export type MainTabParamList = {

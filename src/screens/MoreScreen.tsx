@@ -38,7 +38,7 @@ export const MoreScreen: React.FC<Props> = ({ navigation }) => {
       subtitle: 'Descargar documentos',
       icon: 'document-text',
       color: '#4facfe',
-      onPress: () => {},
+      onPress: () => navigation.navigate('Certificates'),
     },
     {
       id: '4',
@@ -46,7 +46,7 @@ export const MoreScreen: React.FC<Props> = ({ navigation }) => {
       subtitle: 'Gestiona tus inversiones',
       icon: 'trending-up',
       color: '#43e97b',
-      onPress: () => {},
+      onPress: () => navigation.navigate('Investments'),
     },
     {
       id: '5',
@@ -54,7 +54,7 @@ export const MoreScreen: React.FC<Props> = ({ navigation }) => {
       subtitle: 'Tus pólizas y coberturas',
       icon: 'shield-checkmark',
       color: '#fa709a',
-      onPress: () => {},
+      onPress: () => navigation.navigate('Insurance'),
     },
     {
       id: '6',
@@ -62,7 +62,7 @@ export const MoreScreen: React.FC<Props> = ({ navigation }) => {
       subtitle: 'Sucursales y cajeros',
       icon: 'location',
       color: '#667eea',
-      onPress: () => {},
+      onPress: () => navigation.navigate('Locations'),
     },
     {
       id: '7',
@@ -70,7 +70,7 @@ export const MoreScreen: React.FC<Props> = ({ navigation }) => {
       subtitle: 'Ajustes de la aplicación',
       icon: 'settings',
       color: '#764ba2',
-      onPress: () => {},
+      onPress: () => navigation.navigate('Settings'),
     },
     {
       id: '8',
@@ -78,7 +78,7 @@ export const MoreScreen: React.FC<Props> = ({ navigation }) => {
       subtitle: 'Contacta con nosotros',
       icon: 'help-circle',
       color: '#f5576c',
-      onPress: () => {},
+      onPress: () => navigation.navigate('Help'),
     },
   ];
 
@@ -127,7 +127,10 @@ export const MoreScreen: React.FC<Props> = ({ navigation }) => {
             <Text style={styles.infoText}>
               Nuestro equipo está disponible 24/7 para asistirte
             </Text>
-            <TouchableOpacity style={styles.contactButton}>
+            <TouchableOpacity
+              style={styles.contactButton}
+              onPress={() => navigation.navigate('ContactSupport')}
+            >
               <Text style={styles.contactButtonText}>Contactar Ahora</Text>
               <Ionicons name="arrow-forward" size={16} color="#667eea" />
             </TouchableOpacity>
@@ -138,7 +141,10 @@ export const MoreScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Acceso Rápido</Text>
           
-          <TouchableOpacity style={styles.quickAccessButton}>
+          <TouchableOpacity
+            style={styles.quickAccessButton}
+            onPress={() => navigation.navigate('Security')}
+          >
             <View style={styles.quickAccessIcon}>
               <Ionicons name="shield-checkmark" size={20} color="#4CAF50" />
             </View>
@@ -151,7 +157,10 @@ export const MoreScreen: React.FC<Props> = ({ navigation }) => {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.quickAccessButton}>
+          <TouchableOpacity
+            style={styles.quickAccessButton}
+            onPress={() => navigation.navigate('Notifications')}
+          >
             <View style={styles.quickAccessIcon}>
               <Ionicons name="notifications" size={20} color="#FF9800" />
             </View>

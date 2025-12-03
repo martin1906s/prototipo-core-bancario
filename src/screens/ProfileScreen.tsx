@@ -79,7 +79,10 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Configuración</Text>
           
-          <TouchableOpacity style={styles.optionButton}>
+          <TouchableOpacity
+            style={styles.optionButton}
+            onPress={() => navigation.navigate('ChangePassword')}
+          >
             <View style={styles.optionIconContainer}>
               <Ionicons name="key" size={24} color="#667eea" />
             </View>
@@ -87,7 +90,10 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
             <Ionicons name="chevron-forward" size={20} color="#999" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.optionButton}>
+          <TouchableOpacity
+            style={styles.optionButton}
+            onPress={() => navigation.navigate('Security')}
+          >
             <View style={styles.optionIconContainer}>
               <Ionicons name="shield-checkmark" size={24} color="#667eea" />
             </View>
@@ -95,7 +101,10 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
             <Ionicons name="chevron-forward" size={20} color="#999" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.optionButton}>
+          <TouchableOpacity
+            style={styles.optionButton}
+            onPress={() => navigation.navigate('Biometry')}
+          >
             <View style={styles.optionIconContainer}>
               <Ionicons name="fingerprint" size={24} color="#667eea" />
             </View>
@@ -103,7 +112,10 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
             <Ionicons name="chevron-forward" size={20} color="#999" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.optionButton}>
+          <TouchableOpacity
+            style={styles.optionButton}
+            onPress={() => navigation.navigate('Notifications')}
+          >
             <View style={styles.optionIconContainer}>
               <Ionicons name="notifications" size={24} color="#667eea" />
             </View>
@@ -116,7 +128,10 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Soporte</Text>
           
-          <TouchableOpacity style={styles.optionButton}>
+          <TouchableOpacity
+            style={styles.optionButton}
+            onPress={() => navigation.navigate('Help')}
+          >
             <View style={styles.optionIconContainer}>
               <Ionicons name="help-circle" size={24} color="#667eea" />
             </View>
@@ -124,7 +139,10 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
             <Ionicons name="chevron-forward" size={20} color="#999" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.optionButton}>
+          <TouchableOpacity
+            style={styles.optionButton}
+            onPress={() => navigation.navigate('ContactSupport')}
+          >
             <View style={styles.optionIconContainer}>
               <Ionicons name="chatbubbles" size={24} color="#667eea" />
             </View>
@@ -132,7 +150,10 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
             <Ionicons name="chevron-forward" size={20} color="#999" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.optionButton}>
+          <TouchableOpacity
+            style={styles.optionButton}
+            onPress={() => navigation.navigate('Terms')}
+          >
             <View style={styles.optionIconContainer}>
               <Ionicons name="document-text" size={24} color="#667eea" />
             </View>
@@ -140,7 +161,10 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
             <Ionicons name="chevron-forward" size={20} color="#999" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.optionButton}>
+          <TouchableOpacity
+            style={styles.optionButton}
+            onPress={() => navigation.navigate('Privacy')}
+          >
             <View style={styles.optionIconContainer}>
               <Ionicons name="shield" size={24} color="#667eea" />
             </View>
@@ -150,7 +174,11 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
         </View>
 
         {/* Cerrar Sesión */}
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <TouchableOpacity 
+          style={styles.logoutButton} 
+          onPress={handleLogout}
+          activeOpacity={0.8}
+        >
           <Ionicons name="log-out-outline" size={24} color="#FF6B6B" />
           <Text style={styles.logoutText}>Cerrar Sesión</Text>
         </TouchableOpacity>

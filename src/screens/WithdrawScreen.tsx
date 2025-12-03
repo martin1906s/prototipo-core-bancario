@@ -3,9 +3,9 @@ import {
   View,
   Text,
   StyleSheet,
+  TouchableOpacity,
   ScrollView,
   TextInput,
-  TouchableOpacity,
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -15,29 +15,29 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList, Transaction } from '../types';
 import { formatCurrency } from '../utils/format';
 
-type TransferScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Transfer'>;
+type WithdrawScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Withdraw'>;
 
 interface Props {
-  navigation: TransferScreenNavigationProp;
+  navigation: WithdrawScreenNavigationProp;
 }
 
-export const TransferScreen: React.FC<Props> = ({ navigation }) => {
+const quickAmounts = [50, 100, 200, 500];
+
+export const WithdrawScreen: React.FC<Props> = ({ navigation }) => {
   const { accounts, addTransaction, updateAccountBalance } = useAuth();
   const [selectedAccountId, setSelectedAccountId] = useState(accounts[0]?.id);
-  const [destinationAccount, setDestinationAccount] = useState('');
   const [amount, setAmount] = useState('');
-  const [description, setDescription] = useState('');
 
   const selectedAccount = accounts.find((acc) => acc.id === selectedAccountId);
 
-  const handleTransfer = () => {
-    if (!destinationAccount || !amount || !description) {
-      Alert.alert('Error', 'Por favor completa todos los campos');
+  const handleWithdraw = () => {
+    if (!amount) {
+      Alert.alert('Error', 'Ingresa un monto');
       return;
     }
 
-    const transferAmount = parseFloat(amount);
-    if (isNaN(transferAmount) || transferAmount <= 0) {
+    const withdrawAmount = parseFloat(amount);
+    if (isNaN(withdrawAmount) || withdrawAmount <= 0) {
       Alert.alert('Error', 'Ingresa un monto válido');
       return;
     }
@@ -47,38 +47,33 @@ export const TransferScreen: React.FC<Props> = ({ navigation }) => {
       return;
     }
 
-    if (transferAmount > selectedAccount.balance) {
+    if (withdrawAmount > selectedAccount.balance) {
       Alert.alert('Error', 'Saldo insuficiente');
       return;
     }
 
     // Actualizar balance de la cuenta
-    updateAccountBalance(selectedAccountId, -transferAmount);
+    updateAccountBalance(selectedAccountId, -withdrawAmount);
 
-    // Crear transacción
     const newTransaction: Transaction = {
       id: Date.now().toString(),
-      type: 'Transferencia',
-      amount: -transferAmount,
+      type: 'Retiro',
+      amount: -withdrawAmount,
       date: new Date(),
-      description: description,
+      description: 'Retiro en cajero',
       status: 'Completada',
-      from: selectedAccount.accountNumber,
-      to: destinationAccount,
     };
 
     addTransaction(newTransaction);
 
     Alert.alert(
-      'Transferencia Exitosa',
-      `Has transferido ${formatCurrency(transferAmount)} exitosamente a la cuenta ${destinationAccount}`,
+      'Retiro Exitoso',
+      `Has retirado ${formatCurrency(withdrawAmount)} exitosamente`,
       [
         {
           text: 'OK',
           onPress: () => {
-            setDestinationAccount('');
             setAmount('');
-            setDescription('');
             navigation.goBack();
           },
         },
@@ -88,17 +83,15 @@ export const TransferScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Transferir</Text>
+        <Text style={styles.headerTitle}>Retiro</Text>
         <View style={{ width: 40 }} />
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} style={styles.content}>
-        {/* Seleccionar Cuenta Origen */}
         <View style={styles.section}>
           <Text style={styles.label}>Desde mi cuenta</Text>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
@@ -119,7 +112,6 @@ export const TransferScreen: React.FC<Props> = ({ navigation }) => {
                   end={{ x: 1, y: 1 }}
                 >
                   <Text style={styles.accountType}>{account.accountType}</Text>
-                  <Text style={styles.accountNumber}>{account.accountNumber}</Text>
                   <Text style={styles.accountBalance}>
                     {formatCurrency(account.balance)}
                   </Text>
@@ -129,36 +121,8 @@ export const TransferScreen: React.FC<Props> = ({ navigation }) => {
           </ScrollView>
         </View>
 
-        {/* Cuenta Destino */}
         <View style={styles.section}>
-          <Text style={styles.label}>Cuenta destino</Text>
-          <View style={styles.inputContainer}>
-            <Ionicons name="person-outline" size={20} color="#667eea" />
-            <TextInput
-              style={styles.input}
-              placeholder="Número de cuenta"
-              value={destinationAccount}
-              onChangeText={setDestinationAccount}
-              keyboardType="numeric"
-              maxLength={10}
-            />
-          </View>
-          <TouchableOpacity
-            style={styles.contactsButton}
-            onPress={() => navigation.navigate('Contacts', {
-              onSelectContact: (accountNumber: string, name: string) => {
-                setDestinationAccount(accountNumber);
-              }
-            })}
-          >
-            <Ionicons name="people-outline" size={20} color="#667eea" />
-            <Text style={styles.contactsButtonText}>Seleccionar de contactos</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Monto */}
-        <View style={styles.section}>
-          <Text style={styles.label}>Monto a transferir</Text>
+          <Text style={styles.label}>Monto a retirar</Text>
           <View style={styles.amountContainer}>
             <Text style={styles.currencySymbol}>$</Text>
             <TextInput
@@ -171,25 +135,39 @@ export const TransferScreen: React.FC<Props> = ({ navigation }) => {
           </View>
         </View>
 
-        {/* Descripción */}
         <View style={styles.section}>
-          <Text style={styles.label}>Descripción</Text>
-          <View style={styles.inputContainer}>
-            <Ionicons name="document-text-outline" size={20} color="#667eea" />
-            <TextInput
-              style={styles.input}
-              placeholder="Ej: Pago de renta"
-              value={description}
-              onChangeText={setDescription}
-            />
+          <Text style={styles.label}>Monto rápido</Text>
+          <View style={styles.quickAmountsContainer}>
+            {quickAmounts.map((quickAmount) => (
+              <TouchableOpacity
+                key={quickAmount}
+                style={styles.quickAmountButton}
+                onPress={() => setAmount(quickAmount.toString())}
+              >
+                <Text style={styles.quickAmountText}>
+                  {formatCurrency(quickAmount)}
+                </Text>
+              </TouchableOpacity>
+            ))}
           </View>
         </View>
 
-        {/* Resumen */}
+        <View style={styles.section}>
+          <Text style={styles.label}>Ubicación de cajero</Text>
+          <TouchableOpacity 
+            style={styles.locationButton}
+            onPress={() => navigation.navigate('Locations')}
+          >
+            <Ionicons name="location-outline" size={20} color="#667eea" />
+            <Text style={styles.locationButtonText}>Seleccionar cajero cercano</Text>
+            <Ionicons name="chevron-forward" size={20} color="#999" />
+          </TouchableOpacity>
+        </View>
+
         {amount && parseFloat(amount) > 0 && (
           <View style={styles.summaryContainer}>
             <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Monto a transferir:</Text>
+              <Text style={styles.summaryLabel}>Monto a retirar:</Text>
               <Text style={styles.summaryValue}>{formatCurrency(parseFloat(amount))}</Text>
             </View>
             <View style={styles.summaryRow}>
@@ -205,20 +183,19 @@ export const TransferScreen: React.FC<Props> = ({ navigation }) => {
           </View>
         )}
 
-        {/* Botón Transferir */}
         <TouchableOpacity 
-          style={styles.transferButton} 
-          onPress={handleTransfer}
+          style={styles.withdrawButton} 
+          onPress={handleWithdraw}
           activeOpacity={0.8}
         >
           <LinearGradient
             colors={['#667eea', '#764ba2']}
-            style={styles.transferButtonGradient}
+            style={styles.withdrawButtonGradient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
           >
-            <Text style={styles.transferButtonText}>Realizar Transferencia</Text>
-            <Ionicons name="arrow-forward" size={20} color="#fff" />
+            <Text style={styles.withdrawButtonText}>Confirmar Retiro</Text>
+            <Ionicons name="cash-outline" size={20} color="#fff" />
           </LinearGradient>
         </TouchableOpacity>
       </ScrollView>
@@ -264,8 +241,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   accountCard: {
-    width: 180,
-    height: 120,
+    width: 150,
+    height: 100,
     borderRadius: 16,
     padding: 16,
     marginRight: 12,
@@ -276,47 +253,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     opacity: 0.9,
   },
-  accountNumber: {
-    fontSize: 14,
-    color: '#fff',
-    fontWeight: '600',
-  },
   accountBalance: {
-    fontSize: 20,
+    fontSize: 18,
     color: '#fff',
     fontWeight: 'bold',
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    height: 56,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    color: '#333',
-    marginLeft: 12,
-  },
-  contactsButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 12,
-    paddingVertical: 12,
-  },
-  contactsButtonText: {
-    fontSize: 14,
-    color: '#667eea',
-    fontWeight: '600',
-    marginLeft: 8,
   },
   amountContainer: {
     flexDirection: 'row',
@@ -342,6 +282,42 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     color: '#333',
+  },
+  quickAmountsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  quickAmountButton: {
+    backgroundColor: '#fff',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  quickAmountText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#667eea',
+  },
+  locationButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  locationButtonText: {
+    flex: 1,
+    fontSize: 15,
+    color: '#333',
+    marginLeft: 12,
   },
   summaryContainer: {
     backgroundColor: '#fff',
@@ -385,12 +361,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#667eea',
   },
-  transferButton: {
+  withdrawButton: {
     marginHorizontal: 20,
     marginVertical: 20,
     marginBottom: 40,
   },
-  transferButtonGradient: {
+  withdrawButtonGradient: {
     flexDirection: 'row',
     height: 56,
     borderRadius: 12,
@@ -402,7 +378,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
   },
-  transferButtonText: {
+  withdrawButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',

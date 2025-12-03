@@ -54,7 +54,13 @@ export const TransactionHistoryScreen: React.FC<Props> = ({ navigation }) => {
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Historial</Text>
-        <TouchableOpacity style={styles.filterButton}>
+        <TouchableOpacity 
+          style={styles.filterButton}
+          onPress={() => {
+            // Toggle filter visibility or show filter options
+            setSelectedFilter(selectedFilter === 'Todas' ? 'Transferencias' : 'Todas');
+          }}
+        >
           <Ionicons name="filter" size={24} color="#333" />
         </TouchableOpacity>
       </View>
@@ -72,7 +78,7 @@ export const TransactionHistoryScreen: React.FC<Props> = ({ navigation }) => {
 
       {/* Filtros */}
       <ScrollView
-        horizontal
+        horizontal={true}
         showsHorizontalScrollIndicator={false}
         style={styles.filtersContainer}
         contentContainerStyle={styles.filtersContent}
@@ -106,7 +112,11 @@ export const TransactionHistoryScreen: React.FC<Props> = ({ navigation }) => {
               {filteredTransactions.length} transacciones encontradas
             </Text>
             {filteredTransactions.map((transaction) => (
-              <TransactionItem key={transaction.id} transaction={transaction} />
+              <TransactionItem 
+                key={transaction.id} 
+                transaction={transaction}
+                onPress={() => navigation.navigate('TransactionDetails', { transaction })}
+              />
             ))}
           </>
         ) : (

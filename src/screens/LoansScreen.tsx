@@ -4,8 +4,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../context/AuthContext';
 import { formatCurrency, formatDate } from '../utils/format';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../types';
 
-export const LoansScreen: React.FC = () => {
+type LoansScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
+interface Props {
+  navigation: LoansScreenNavigationProp;
+}
+
+export const LoansScreen: React.FC<Props> = ({ navigation }) => {
   const { loans } = useAuth();
 
   const totalDebt = loans.reduce((sum, loan) => sum + loan.remainingBalance, 0);
@@ -31,7 +39,10 @@ export const LoansScreen: React.FC = () => {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Mis Préstamos</Text>
-        <TouchableOpacity style={styles.addButton}>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => navigation.navigate('RequestLoan')}
+        >
           <Ionicons name="add-circle-outline" size={28} color="#667eea" />
         </TouchableOpacity>
       </View>
@@ -59,7 +70,11 @@ export const LoansScreen: React.FC = () => {
           {loans.map((loan) => {
             const progress = ((loan.amount - loan.remainingBalance) / loan.amount) * 100;
             return (
-              <TouchableOpacity key={loan.id} activeOpacity={0.8}>
+              <TouchableOpacity
+                key={loan.id}
+                activeOpacity={0.8}
+                onPress={() => navigation.navigate('LoanDetails', { loanId: loan.id })}
+              >
                 <LinearGradient
                   colors={['#667eea', '#764ba2']}
                   style={styles.loanCard}
@@ -114,7 +129,10 @@ export const LoansScreen: React.FC = () => {
                     <Text style={styles.progressText}>{progress.toFixed(1)}% pagado</Text>
                   </View>
 
-                  <TouchableOpacity style={styles.payButton}>
+                  <TouchableOpacity
+                    style={styles.payButton}
+                    onPress={() => navigation.navigate('PayLoan', { loanId: loan.id })}
+                  >
                     <Text style={styles.payButtonText}>Pagar Cuota</Text>
                     <Ionicons name="arrow-forward" size={16} color="#667eea" />
                   </TouchableOpacity>
@@ -128,7 +146,10 @@ export const LoansScreen: React.FC = () => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Más Opciones</Text>
           
-          <TouchableOpacity style={styles.optionButton}>
+          <TouchableOpacity
+            style={styles.optionButton}
+            onPress={() => navigation.navigate('RequestLoan')}
+          >
             <View style={styles.optionIconContainer}>
               <Ionicons name="add-circle" size={24} color="#667eea" />
             </View>
@@ -139,7 +160,10 @@ export const LoansScreen: React.FC = () => {
             <Ionicons name="chevron-forward" size={20} color="#999" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.optionButton}>
+          <TouchableOpacity
+            style={styles.optionButton}
+            onPress={() => navigation.navigate('LoanSimulator')}
+          >
             <View style={styles.optionIconContainer}>
               <Ionicons name="calculator" size={24} color="#667eea" />
             </View>
@@ -150,16 +174,21 @@ export const LoansScreen: React.FC = () => {
             <Ionicons name="chevron-forward" size={20} color="#999" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.optionButton}>
-            <View style={styles.optionIconContainer}>
-              <Ionicons name="document-text" size={24} color="#667eea" />
-            </View>
-            <View style={styles.optionContent}>
-              <Text style={styles.optionTitle}>Tabla de Amortización</Text>
-              <Text style={styles.optionSubtitle}>Ver plan de pagos</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#999" />
-          </TouchableOpacity>
+          {loans.length > 0 && (
+            <TouchableOpacity
+              style={styles.optionButton}
+              onPress={() => navigation.navigate('AmortizationTable', { loanId: loans[0].id })}
+            >
+              <View style={styles.optionIconContainer}>
+                <Ionicons name="document-text" size={24} color="#667eea" />
+              </View>
+              <View style={styles.optionContent}>
+                <Text style={styles.optionTitle}>Tabla de Amortización</Text>
+                <Text style={styles.optionSubtitle}>Ver plan de pagos</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#999" />
+            </TouchableOpacity>
+          )}
         </View>
       </ScrollView>
     </View>

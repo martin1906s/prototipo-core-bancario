@@ -8,6 +8,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../context/AuthContext';
 import { AccountCard } from '../components/AccountCard';
 import { QuickActionButton } from '../components/QuickActionButton';
@@ -38,41 +39,59 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.greeting}>¡Hola!</Text>
-          <Text style={styles.userName}>{user?.name}</Text>
+      {/* Header con gradiente */}
+      <LinearGradient
+        colors={['#667eea', '#764ba2']}
+        style={styles.header}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
+        <View style={styles.headerContent}>
+          <View>
+            <Text style={styles.greeting}>¡Hola!</Text>
+            <Text style={styles.userName}>{user?.name?.split(' ')[0] || 'Usuario'}</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.notificationButton}
+            onPress={() => navigation.navigate('Notifications')}
+          >
+            <Ionicons name="notifications-outline" size={24} color="#fff" />
+            <View style={styles.notificationBadge} />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.notificationButton}>
-          <Ionicons name="notifications-outline" size={24} color="#333" />
-          <View style={styles.notificationBadge} />
-        </TouchableOpacity>
-      </View>
+      </LinearGradient>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl refreshing={Boolean(refreshing)} onRefresh={onRefresh} />
         }
       >
         {/* Balance Total */}
         <View style={styles.totalBalanceContainer}>
           <Text style={styles.totalBalanceLabel}>Balance Total</Text>
           <Text style={styles.totalBalance}>{formatCurrency(totalBalance)}</Text>
+          <View style={styles.balanceBadge}>
+            <Ionicons name="trending-up" size={16} color="#4CAF50" />
+            <Text style={styles.balanceBadgeText}>Disponible</Text>
+          </View>
         </View>
 
         {/* Cuentas */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Mis Cuentas</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('AllAccounts')}>
               <Text style={styles.seeAll}>Ver todas</Text>
             </TouchableOpacity>
           </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
             {accounts.map((account) => (
-              <AccountCard key={account.id} account={account} />
+              <AccountCard
+                key={account.id}
+                account={account}
+                onPress={() => navigation.navigate('AllAccounts')}
+              />
             ))}
           </ScrollView>
         </View>
@@ -81,7 +100,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Acciones Rápidas</Text>
           <ScrollView
-            horizontal
+            horizontal={true}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.quickActions}
           >
@@ -100,19 +119,19 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
             <QuickActionButton
               icon="qr-code"
               label="QR"
-              onPress={() => {}}
+              onPress={() => navigation.navigate('QRCode')}
               gradientColors={['#4facfe', '#00f2fe']}
             />
             <QuickActionButton
               icon="cash"
               label="Retiro"
-              onPress={() => {}}
+              onPress={() => navigation.navigate('Withdraw')}
               gradientColors={['#43e97b', '#38f9d7']}
             />
             <QuickActionButton
               icon="download"
               label="Depósito"
-              onPress={() => {}}
+              onPress={() => navigation.navigate('Deposit')}
               gradientColors={['#fa709a', '#fee140']}
             />
           </ScrollView>
@@ -127,7 +146,11 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
             </TouchableOpacity>
           </View>
           {recentTransactions.map((transaction) => (
-            <TransactionItem key={transaction.id} transaction={transaction} />
+            <TransactionItem 
+              key={transaction.id} 
+              transaction={transaction}
+              onPress={() => navigation.navigate('TransactionDetails', { transaction })}
+            />
           ))}
         </View>
       </ScrollView>
@@ -141,39 +164,59 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f9fa',
   },
   header: {
+    paddingTop: 60,
+    paddingBottom: 30,
+    paddingHorizontal: 20,
+  },
+  headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 20,
-    backgroundColor: '#fff',
   },
   greeting: {
     fontSize: 16,
-    color: '#666',
+    color: '#fff',
+    opacity: 0.9,
   },
   userName: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#fff',
+    marginTop: 4,
   },
   notificationButton: {
     position: 'relative',
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   notificationBadge: {
     position: 'absolute',
-    top: 0,
-    right: 0,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    top: 8,
+    right: 8,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
     backgroundColor: '#FF6B6B',
+    borderWidth: 2,
+    borderColor: '#764ba2',
   },
   totalBalanceContainer: {
     backgroundColor: '#fff',
     paddingHorizontal: 20,
+    paddingTop: 20,
     paddingBottom: 20,
+    marginTop: -15,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
   },
   totalBalanceLabel: {
     fontSize: 14,
@@ -181,9 +224,26 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   totalBalance: {
-    fontSize: 36,
+    fontSize: 42,
     fontWeight: 'bold',
     color: '#333',
+    marginTop: 8,
+  },
+  balanceBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+    backgroundColor: '#E8F5E9',
+    alignSelf: 'flex-start',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+  },
+  balanceBadgeText: {
+    fontSize: 12,
+    color: '#4CAF50',
+    fontWeight: '600',
+    marginLeft: 6,
   },
   section: {
     marginVertical: 20,
